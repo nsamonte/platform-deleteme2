@@ -1,0 +1,17 @@
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.ServiceName }}
+  labels:
+    arundo-environment: {{ .Values.Namespace }}
+spec:
+  ports:
+  - name: {{ .Values.ServiceName }}
+    port: {{ .Values.ServicePort }}
+    targetPort: {{ .Values.ContainerPort }}
+    protocol: TCP
+  selector:
+    app: "{{ .Values.ServiceName }}-{{ .Values.Namespace }}"
+  type: {{ .Values.ServiceType }}

@@ -1,0 +1,65 @@
+branches:
+  only:
+    - master
+
+services:
+  - docker
+
+language: go
+
+go:
+  - 1.11.x
+
+cache:
+  directories:
+    - $HOME/.cache/go-build
+    - $HOME/gopath/pkg/mod
+
+env:
+  global:
+    - GO111MODULE=on # This will be unnecessary when Go 1.12 lands.
+    - CICD_DIRECTORY=golang1.11/app
+    - NAMESPACE=fabric
+    - CHARTS_SUBTYPE=fabric
+    - POSTMAN_TIMEOUT_REQUEST=60000
+    - POSTMAN_DELAY_REQUEST=1000
+
+install: true
+
+before_script:
+  - git clone --branch 2019.115.0 https://${GITHUB_ACCESS_TOKEN}@github.com/arundo/cicd-travis.git
+  - mv -vn cicd-travis/${CICD_DIRECTORY}/* .
+  - if [[ $TRAVIS_PULL_REQUEST != false ]]; then
+      make install-lint;
+      make install-newman;
+    fi;
+  - make install-k8s
+  - make install-kafka
+
+script:
+  - if [[ $TRAVIS_PULL_REQUEST != false ]]; then
+      make lint || travis_terminate 1;
+    fi;
+  - make build
+  - make generate-chart
+  - if [[ $TRAVIS_PULL_REQUEST != false ]]; then
+      make integration-test;
+    fi;
+
+deploy:
+  provider: script
+  script: make deploy
+  verbose: true
+  on:
+    all_branches: true
+  skip_cleanup: true
+
+after_success:
+  - make cleanup
+  - make publish-chart
+
+after_failure:
+  - make cleanup
+
+notifications:
+  slack: arundo:QC3tXNL0ezWNGFbROfz57RcK

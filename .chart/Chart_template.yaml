@@ -1,0 +1,10 @@
+apiVersion: v0
+appVersion: "0.0"
+description: A Helm chart for $SERVICE_NAME
+version: $CHART_VERSION
+name: $SERVICE_NAME
+buildRef: $TRAVIS_BUILD_NUMBER
+commit: $TRAVIS_COMMIT
+commitRange: "$TRAVIS_COMMIT_RANGE"
+commitMessage: "$TRAVIS_COMMIT_MESSAGE"
+commitUrl: "https://github.com/arundo/$SERVICE_NAME/commit/$TRAVIS_COMMIT"

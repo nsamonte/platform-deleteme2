@@ -1,0 +1,782 @@
+{
+	"info": {
+		"_postman_id": "4d82b688-82e3-452f-be74-06fddddc965e",
+		"name": "golang-crud-skeleton",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "v0alpha/skeletons",
+			"item": [
+				{
+					"name": "login via Auth0",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2109308d-b3df-4639-aede-6cc6e1a8535a",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"arundo_access_token\", jsonData.access_token);",
+									"postman.setEnvironmentVariable(\"arundo_refresh_token\", jsonData.refresh_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"email\":\"{{user}}\",\"password\":\"{{password}}\"}"
+						},
+						"url": {
+							"raw": "{{authentication_url}}/v0/authentication/tokens",
+							"host": [
+								"{{authentication_url}}"
+							],
+							"path": [
+								"v0",
+								"authentication",
+								"tokens"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Create - without token (401 unauthorized)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2373ea15-6dd7-42ce-bfa2-aeb4e872af64",
+								"exec": [
+									"pm.test(\"should receive 401 status code when no bearer token is provided.\", () => {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}",
+								"disabled": true
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"boneCount\": 1\n}"
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2373ea15-6dd7-42ce-bfa2-aeb4e872af64",
+								"exec": [
+									"var jsondata = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"should return 201 status coded on user created success.\", () => {",
+									"    pm.response.to.have.status(201);",
+									"    ",
+									"    postman.setEnvironmentVariable(\"skeleton_guid\", jsondata.guid);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"boneCount\": 1\n}"
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Create - succeeds with properties matching response body (201 Created)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2373ea15-6dd7-42ce-bfa2-aeb4e872af64",
+								"exec": [
+									"pm.test(\"should return an object with properties matching response body.\", () => {",
+									"    var response = pm.response.json();",
+									"",
+									"    pm.expect(response.guid).to.be.a('string');",
+									"    pm.expect(response.boneCount).to.be.a('number');",
+									"    pm.expect(response.createdAt).to.be.a('string');",
+									"    pm.expect(response.createBy).to.be.a('string');",
+									"    pm.expect(response.updatedAt).to.be.a('string');",
+									"    pm.expect(response.updatedBy).to.be.a('string');",
+									"   ",
+									"}); ",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"boneCount\": 1 \n}"
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Read",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ed84090b-db44-4fe6-9f6c-a411c0d25f94",
+								"exec": [
+									"var jsondata = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"should return 200 status coded when skeleton are successfully fetch .\", () => {",
+									"    pm.response.to.have.status(200);",
+									"    ",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons/{{skeleton_guid}}",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons",
+								"{{skeleton_guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Read - - succeeds with properties matching response body (200 OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ed84090b-db44-4fe6-9f6c-a411c0d25f94",
+								"exec": [
+									"pm.test(\"should return an object with properties matching response body.\", () => {",
+									"    var response = pm.response.json();",
+									"",
+									"    pm.expect(response.guid).to.be.a('string');",
+									"    pm.expect(response.boneCount).to.be.a('number');",
+									"    pm.expect(response.createdAt).to.be.a('string');",
+									"    pm.expect(response.createBy).to.be.a('string');",
+									"    pm.expect(response.updatedAt).to.be.a('string');",
+									"    pm.expect(response.updatedBy).to.be.a('string');",
+									"   ",
+									"}); "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons/{{skeleton_guid}}",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons",
+								"{{skeleton_guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Read - fails (404 Not Found)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "71544f11-34e5-4ffd-acb0-6930f03b4663",
+								"exec": [
+									"var jsondata = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"should return 404 status code with invalid guid\", () => {",
+									"    pm.response.to.have.status(404);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons/{{skeleton_invalidguid}}",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons",
+								"{{skeleton_invalidguid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Read -- fails  due to skeleton_guid not provided (400 Bad Request)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9d72bfb4-4c58-4335-9625-a8e3752b3fad",
+								"exec": [
+									"var jsondata = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"should return 400 status code.\", () => {",
+									"    pm.response.to.have.status(400);",
+									"",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons/",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Update(PUT) - succeeds (200 OK)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"boneCount\": 11111\n}"
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons/{{skeleton_guid}}",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons",
+								"{{skeleton_guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Update(PUT) - - succeeds data matching response body (200 OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f11d0816-81f2-4209-a1d8-b192d75a05ca",
+								"exec": [
+									"pm.test(\"should return an object with properties matching response body.\", () => {",
+									"    var response = pm.response.json();",
+									"",
+									"    pm.expect(response.guid).to.be.a('string');",
+									"    pm.expect(response.boneCount).to.be.a('number');",
+									"    pm.expect(response.createdAt).to.be.a('string');",
+									"    pm.expect(response.createBy).to.be.a('string');",
+									"    pm.expect(response.updatedAt).to.be.a('string');",
+									"    pm.expect(response.updatedBy).to.be.a('string');",
+									"   ",
+									"}); "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"boneCount\": 3\n}"
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons/{{skeleton_guid}}",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons",
+								"{{skeleton_guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Update(PUT) - fails (404 Not Found)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cb809665-1df7-4d87-bb39-531674efc38a",
+								"exec": [
+									"var jsondata = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"should return 404 status code with invalid guid\", () => {",
+									"    pm.response.to.have.status(404);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"boneCount\": 3\n}"
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons/{{skeleton_invalidguid}}",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons",
+								"{{skeleton_invalidguid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Update(PUT) - fails (500 Internal Server Error)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "cb809665-1df7-4d87-bb39-531674efc38a",
+								"exec": [
+									"var jsondata = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"should return 500 status code when enter incorrect timestamps.\", () => {",
+									"    pm.response.to.have.status(500);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t    \"boneCount\": 11111,\n    \t\"updatedAt\": \"2019-04-26T19:47:53Z1\"\n}"
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons/{{skeleton_invalidguid}}",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons",
+								"{{skeleton_invalidguid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Delete - succeeds (204 No Content)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "200cadc0-1da9-4b63-a080-46a9ceeb4efb",
+								"exec": [
+									"pm.test(\"should receive 204 No Content status code on user deletes success\", () => {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons/{{skeleton_guid}}",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons",
+								"{{skeleton_guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Read - fails (404 Not Found)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "71544f11-34e5-4ffd-acb0-6930f03b4663",
+								"exec": [
+									"var jsondata = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"should return 404 status code with invalid guid\", () => {",
+									"    pm.response.to.have.status(404);",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons/{{skeleton_guid}}",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons",
+								"{{skeleton_guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Skeleton Delete - fails (404 Not Found)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "200cadc0-1da9-4b63-a080-46a9ceeb4efb",
+								"exec": [
+									"pm.test(\"should receive 404 Not Found status code on user deletes\", () => {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{arundo_access_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{api_management_url}}/v0alpha/skeletons/{{skeleton_invalidguid}}",
+							"host": [
+								"{{api_management_url}}"
+							],
+							"path": [
+								"v0alpha",
+								"skeletons",
+								"{{skeleton_invalidguid}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

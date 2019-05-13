@@ -1,0 +1,150 @@
+---
+
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ .Values.ServiceName }}
+  annotations:
+    buildRef: {{ .Values.BuildRef | quote }}
+    commit: {{ .Values.Commit | quote }}
+    commitRange: {{ .Values.CommitRange | quote }}
+    commitMessage: {{ .Values.CommitMessage | quote }}
+    commitUrl: {{ .Values.CommitUrl | quote }}
+    chartVersion: {{ .Values.ChartVersion | quote }}
+spec:
+  replicas: {{ .Values.ReplicaCount }}
+  selector:
+    matchLabels:
+      app: "{{ .Values.ServiceName }}-{{ .Values.Namespace }}"
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        name: {{ .Values.ServiceName }}
+        app: "{{ .Values.ServiceName }}-{{ .Values.Namespace }}"
+    spec:
+      containers:
+        - name: {{ .Values.ServiceName }}
+          image: "{{ .Values.Image }}:{{ .Values.ImageTag }}"
+          imagePullPolicy: {{ .Values.ImagePullPolicy }}
+          ports:
+            - name: rest-api
+              containerPort: {{ .Values.ContainerPort }}
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.ContainerPort }}
+            initialDelaySeconds: {{ .Values.readinessProbe.InitialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.PeriodSeconds }}
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.ContainerPort }}
+            initialDelaySeconds: {{ .Values.livenessProbe.InitialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.PeriodSeconds }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          env:
+          - name: SERVICE_NAME
+            value: {{ .Values.ConfigMapName }}
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: port
+          - name: ENDPOINT_METRICS_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: endpoint_metrics_port
+          - name: AUTH0_DOMAIN
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: auth0_domain
+          - name: AUTH0_AUDIENCE
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: auth0_audience
+          - name: GIN_MODE
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: gin_mode
+          - name: GORM_LOG_MODE
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: gorm_log_mode
+          - name: QUERY_LIMIT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: query_limit
+          - name: POSTGRES_DATABASE_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: postgres_database_name
+          - name: POSTGRES_HOSTNAME
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: hostname
+          - name: POSTGRES_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: password
+          - name: POSTGRES_PORT
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: port
+          - name: POSTGRES_SSL_MODE
+            valueFrom:
+              secretKeyRef:
+                name: postgres
+                key: ssl_mode
+          - name: POSTGRES_MAX_IDLE_CONNS
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: postgres_max_idle_conns
+          - name: POSTGRES_MAX_OPEN_CONNS
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: postgres_max_open_conns
+          - name: INTERNAL_ACCESS_API_KEY
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: internal_access_api_key
+          - name: IP_WHITELIST
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: ip_whitelist
+          - name: ENABLE_IP_WHITELIST
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: enable_ip_whitelist
+          - name: HEARTBEAT_FREQUENCY
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: heartbeat_frequency
+          - name: LOG_LEVEL
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Values.ConfigMapName }}
+                key: log_level
+      imagePullSecrets:
+        - name: regsecret

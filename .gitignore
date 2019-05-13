@@ -1,0 +1,9 @@
+*.log
+*.idea
+
+# Environment Variables
+.env
+
+# Ignore Vendor
+vendor
+_vendor*

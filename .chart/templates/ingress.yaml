@@ -1,0 +1,41 @@
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.ServiceName }}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    ingress.kubernetes.io/enable-cors: "true"
+spec:
+  rules:
+    - host: "{{ .Values.global.Subdomain }}.{{ .Values.BaseUrl }}"
+      http:
+        paths:
+        - path: /skeletons/health
+          backend:
+            serviceName: {{ .Values.ServiceName }}
+            servicePort: {{ .Values.ContainerPort }}
+        - path: /v0alpha/skeletons
+          backend:
+            serviceName: {{ .Values.ServiceName }}
+            servicePort: {{ .Values.ContainerPort }}
+        - path: /v0alpha/iskeletons
+          backend:
+            serviceName: {{ .Values.ServiceName }}
+            servicePort: {{ .Values.ContainerPort }}
+    - host: "{{ .Values.global.ArundoSubdomain }}.{{ .Values.BaseUrl }}"
+      http:
+        paths:
+        - path: /skeletons/health
+          backend:
+            serviceName: {{ .Values.ServiceName }}
+            servicePort: {{ .Values.ContainerPort }}
+        - path: /v0alpha/skeletons
+          backend:
+            serviceName: {{ .Values.ServiceName }}
+            servicePort: {{ .Values.ContainerPort }}
+        - path: /v0alpha/iskeletons
+          backend:
+            serviceName: {{ .Values.ServiceName }}
+            servicePort: {{ .Values.ContainerPort }}

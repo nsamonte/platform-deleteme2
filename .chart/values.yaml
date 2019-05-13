@@ -1,0 +1,34 @@
+Image: $IMAGE_NAME
+ImageTag: $TRAVIS_COMMIT
+ImagePullPolicy: "Always"
+ReplicaCount: 3
+MaxReplicaCount: 20
+ServiceType: "ClusterIP"
+ServicePort: 5000
+ContainerPort: 5000
+Namespace: "fabric"
+BaseUrl: $BASE_URL
+ServiceName: $SERVICE_NAME
+ConfigMapName: "golang-crud-skeleton"
+global:
+  Subdomain: $SUBDOMAIN
+  ArundoSubdomain: $ARUNDO_SUBDOMAIN
+resources:
+  limits:
+    cpu: 1
+    memory: 5Gi
+  requests:
+    cpu: 300m
+    memory: 100Mi
+readinessProbe:
+  InitialDelaySeconds: 5
+  PeriodSeconds: 10
+livenessProbe:
+  InitialDelaySeconds: 15
+  PeriodSeconds: 20
+BuildRef: $TRAVIS_BUILD_NUMBER
+Commit: $TRAVIS_COMMIT
+CommitRange: "$TRAVIS_COMMIT_RANGE"
+CommitMessage: "$TRAVIS_COMMIT_MESSAGE"
+CommitUrl: "https://github.com/arundo/$SERVICE_NAME/commit/$TRAVIS_COMMIT"
+ChartVersion: "$CHART_VERSION"
